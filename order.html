@@ -583,49 +583,39 @@ button{ font-family:inherit; cursor:pointer; }
     <div class="order-grid">
       <!-- FORM -->
       <div class="order-card">
-        <div class="form-error" id="formError">Моля, попълни всички задължителни полета коректно.</div>
-
-        <form id="orderForm" novalidate>
+        <form class="tm-order-form" id="orderForm" action="https://offers.adricenetwork.com/forms/html/" method="post">
           <div class="field">
-            <label for="fullName">Три имена *</label>
-            <input type="text" id="fullName" name="fullName" placeholder="напр. Иван Петров Иванов" required autocomplete="name">
+            <label for="name">Три имена *</label>
+            <input id="name" type="text" name="name" autocomplete="name" placeholder="напр. Иван Петров Иванов" required>
           </div>
 
           <div class="field">
-            <label for="phone">Телефон за връзка *</label>
-            <input type="tel" id="phone" name="phone" placeholder="08xx xxx xxx" required autocomplete="tel">
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <label for="city">Град / населено място *</label>
-              <input type="text" id="city" name="city" placeholder="напр. София" required autocomplete="address-level2">
-            </div>
-            <div class="field">
-              <label for="postcode">Пощенски код</label>
-              <input type="text" id="postcode" name="postcode" placeholder="напр. 1000" autocomplete="postal-code">
-            </div>
+            <label for="tel">Телефон за връзка *</label>
+            <input id="tel" type="tel" name="tel" autocomplete="tel" placeholder="08xx xxx xxx" required>
           </div>
 
           <div class="field">
-            <label for="address">Адрес за доставка *</label>
-            <input type="text" id="address" name="address" placeholder="ул., №, блок, вход, апартамент" required autocomplete="street-address">
+            <label for="street-address">Адрес за доставка *</label>
+            <input id="street-address" type="text" name="street-address" autocomplete="street-address" placeholder="ул., №, блок, вход, апартамент" required>
           </div>
 
           <div class="field">
-            <label for="courier">Куриерска фирма</label>
-            <select id="courier" name="courier">
-              <option value="econt">Econt</option>
-              <option value="speedy">Speedy</option>
-              <option value="office">До офис на куриер</option>
-              <option value="address">До адрес</option>
-            </select>
-            <p class="field-hint">Ще потвърдим доставката с обаждане преди изпращане.</p>
+            <label for="address-level2">Град / населено място</label>
+            <input id="address-level2" type="text" name="address-level2" autocomplete="address-level2" placeholder="напр. София">
           </div>
 
-          <button type="submit" class="btn btn-primary btn-block btn-lg" id="submitBtn">Потвърди поръчката — 69,00 €</button>
+          <input name="uid" type="hidden" value="0193c015-ceba-77f7-8889-3105ad6e6519" />
+          <input name="offer" type="hidden" value="1843" />
+          <input name="lp" type="hidden" value="1863" />
+          <input name="thankyoupage" type="hidden" value="https://smartwatch4u.store/thank-you.html"/>
+          <input name="_key" type="hidden" value="8edf82f0e54c0a670454d843301939e6adcdf839" />
+
+          <div style="margin-top:10px;">
+            <button name="submit" type="submit" class="btn btn-primary btn-block btn-lg" id="submitBtn">Потвърди поръчката — 69,00 €</button>
+          </div>
           <p class="field-hint" style="text-align:center;margin-top:14px;">Натискайки бутона, приемаш нашите <a href="terms.html" style="color:var(--accent-dark);">Общи условия</a> и <a href="privacy.html" style="color:var(--accent-dark);">Политика за поверителност</a>.</p>
         </form>
+        <script src="https://offers.adricenetwork.com/forms/html/js-v2/" async></script>
       </div>
 
       <!-- SUMMARY -->
@@ -668,83 +658,55 @@ button{ font-family:inherit; cursor:pointer; }
 
 <script>
 // APEX ULTRA — smartwatch4u.store
-// Collects the delivery details, then hands the visitor off to the
-// AdriceNetwork tracking link (offer 1843) so the network's own order
-// flow can record and confirm the conversion. A local click id is
-// appended as `subid` so orders can be matched back to this page.
-//
-// IMPORTANT: replace TRACKING_LINK below if the network ever issues a
-// new tracking URL / uid for this offer.
+// This form posts straight to AdriceNetwork's own API endpoint
+// (action="https://offers.adricenetwork.com/forms/html/"), and their
+// js-v2 script (loaded above, right after the form) handles the actual
+// submission, validation and redirect to `thankyoupage` on success.
+// This block does NOT interfere with that — it only:
+//   1) forwards any first-touch UTM / sub-id params as extra hidden
+//      fields, so ad campaigns stay attributable in network reporting.
+//   2) stores a local copy of the lead so thank-you.html can show a
+//      personalised confirmation if it loads in this same browser tab.
 (function () {
-  var TRACKING_LINK = 'https://offers.adricenetwork.com/?offer=1843&uid=0193c015-ceba-77f7-8889-3105ad6e6519';
-
-  var form = document.getElementById('orderForm');
-  var errorBox = document.getElementById('formError');
+  var form = document.querySelector('.tm-order-form');
   var submitBtn = document.getElementById('submitBtn');
   if (!form) return;
 
-  function makeClickId() {
-    return 'sw4u-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
-  }
+  // 1) Append captured UTM / sub-id params as extra hidden inputs.
+  try {
+    var utmParams = JSON.parse(sessionStorage.getItem('sw4u_utm') || '{}');
+    Object.keys(utmParams).forEach(function (k) {
+      var hidden = document.createElement('input');
+      hidden.type = 'hidden';
+      hidden.name = k;
+      hidden.value = utmParams[k];
+      form.appendChild(hidden);
+    });
+  } catch (err) { /* sessionStorage unavailable — non-blocking */ }
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    var fullName = form.fullName.value.trim();
-    var phone = form.phone.value.trim();
-    var city = form.city.value.trim();
-    var address = form.address.value.trim();
-    var postcode = form.postcode.value.trim();
-    var courier = form.courier.value;
-
-    var phoneOk = /^[0-9+\s()-]{7,}$/.test(phone);
-    var valid = fullName.length > 3 && phoneOk && city.length > 1 && address.length > 3;
-
-    if (!valid) {
-      errorBox.style.display = 'block';
-      errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
-    errorBox.style.display = 'none';
-
-    var clickId = makeClickId();
-
-    // Keep the lead details locally so the thank-you page (and this
-    // browser's session) can show a personalised confirmation once the
-    // network redirects back here.
+  // 2) On submit, stash the lead locally (does not block or alter submission).
+  form.addEventListener('submit', function () {
     try {
+      var fd = new FormData(form);
       sessionStorage.setItem('sw4u_order', JSON.stringify({
-        clickId: clickId,
-        fullName: fullName,
-        phone: phone,
-        city: city,
-        address: address,
-        postcode: postcode,
-        courier: courier,
+        fullName: fd.get('name') || '',
+        phone: fd.get('tel') || '',
+        city: fd.get('address-level2') || '',
+        address: fd.get('street-address') || '',
         product: 'APEX ULTRA',
         total: '69,00 €',
         placedAt: new Date().toISOString()
       }));
-    } catch (err) {
-      /* sessionStorage unavailable — non-blocking */
+    } catch (err) { /* non-blocking */ }
+
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Изпращане…';
     }
-
-    // Carry forward any first-touch UTM / sub-id params captured on the
-    // landing page, so ad-attribution survives into the network's tracking link.
-    var utmParams = {};
-    try { utmParams = JSON.parse(sessionStorage.getItem('sw4u_utm') || '{}'); } catch (err) {}
-
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Пренасочване…';
-
-    var url = TRACKING_LINK + '&subid=' + encodeURIComponent(clickId);
-    Object.keys(utmParams).forEach(function (k) {
-      url += '&' + encodeURIComponent(k) + '=' + encodeURIComponent(utmParams[k]);
-    });
-    window.location.href = url;
+    // No preventDefault() — the network's js-v2 script (or, if that
+    // fails to load, a normal form POST) handles the actual submit.
   });
 })();
-
 </script>
 </body>
 </html>
