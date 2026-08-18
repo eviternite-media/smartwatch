@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="bg">
+<html lang="pl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Поръчката е приета — APEX ULTRA</title>
+<title>Zamówienie przyjęte — APEX ULTRA</title>
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -603,31 +603,31 @@ src="https://www.facebook.com/tr?id=1576911387464284&ev=PageView&noscript=1"
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </div>
 
-    <h1 id="thanksHeadline">Благодарим за поръчката!</h1>
-    <p class="lead" id="thanksLead">Получихме заявката ти за APEX ULTRA. Наш служител ще се обади за потвърждение преди изпращане.</p>
+    <h1 id="thanksHeadline">Dziękujemy za złożenie zamówienia!</h1>
+    <p class="lead" id="thanksLead">Otrzymaliśmy Twoje zamówienie na APEX ULTRA. Nasz konsultant skontaktuje się z Tobą telefonicznie w celu potwierdzenia przed wysyłką.</p>
 
     <div class="thanks-order-id" id="orderIdBox" style="display:none;"></div>
 
     <div class="thanks-steps">
       <div class="thanks-step">
         <span class="num">01</span>
-        <h4>Потвърждение по телефон</h4>
-        <p>Очаквай обаждане в рамките на работния ден за потвърждение на адреса.</p>
+        <h4>Potwierdzenie telefoniczne</h4>
+        <p>Spodziewaj się telefonu w ciągu dnia roboczego w celu weryfikacji adresu dostawy.</p>
       </div>
       <div class="thanks-step">
         <span class="num">02</span>
-        <h4>Изпращане</h4>
-        <p>Пратката тръгва към теб с Econt или Speedy, според избора ти.</p>
+        <h4>Wysyłka</h4>
+        <p>Paczka zostanie wysłana kurierem bezpośrednio pod wskazany adres.</p>
       </div>
       <div class="thanks-step">
         <span class="num">03</span>
-        <h4>Плащане при доставка</h4>
-        <p>Плащаш в брой на куриера при получаване на пратката — 69,00 €.</p>
+        <h4>Płatność przy odbiorze</h4>
+        <p>Płacisz gotówką lub kartą u kuriera podczas odbioru przesyłki — 69,00 €.</p>
       </div>
     </div>
 
     <div style="margin-top:52px;">
-      <a href="index.html" class="btn btn-ghost">Обратно към начална страница</a>
+      <a href="index.html" class="btn btn-ghost">Powrót do strony głównej</a>
     </div>
   </div>
 </main>
@@ -637,9 +637,9 @@ src="https://www.facebook.com/tr?id=1576911387464284&ev=PageView&noscript=1"
     <div class="footer-bottom" style="margin-top:0;padding-top:0;border-top:none;">
       <span>© 2026 SmartWatch4U · smartwatch4u.store</span>
       <div style="display:flex;gap:18px;">
-        <a href="terms.html">Общи условия</a>
-        <a href="privacy.html">Поверителност</a>
-        <a href="shipping.html">Доставка</a>
+        <a href="terms.html">Regulamin</a>
+        <a href="privacy.html">Polityka prywatności</a>
+        <a href="shipping.html">Dostawa</a>
       </div>
     </div>
   </div>
@@ -661,14 +661,14 @@ src="https://www.facebook.com/tr?id=1576911387464284&ev=PageView&noscript=1"
 
   if (stored && stored.fullName) {
     var firstName = stored.fullName.split(' ')[0];
-    headline.textContent = 'Благодарим, ' + firstName + '!';
-    lead.textContent = 'Поръчката ти за APEX ULTRA към ' + stored.city + ' е получена. Ще се свържем с теб на ' + stored.phone + ' за потвърждение.';
+    headline.textContent = 'Dziękujemy, ' + firstName + '!';
+    lead.textContent = 'Twoje zamówienie na APEX ULTRA z dostawą do miejscowości ' + stored.city + ' zostało przyjęte. Skontaktujemy się z Tobą pod numerem ' + stored.phone + ' w celu potwierdzenia.';
   }
 
   var oid = (stored && stored.clickId) || networkOid;
   if (oid) {
     box.style.display = 'inline-block';
-    box.textContent = 'Номер на поръчка: ' + oid;
+    box.textContent = 'Numer zamówienia: ' + oid;
   }
 })();
 </script>
